@@ -1,0 +1,1 @@
+python -m thesisdata -e thesis/MNIST-v0 -n 20 -a --policy 'gymu.policy.Uniform' --kwargs {\"num_actions\":4}
