@@ -9,7 +9,9 @@ __status__ = "Development"
 
 from gym.envs import register
 from . import mnist
+from . import sb3
+
 
 def register_entry_point(): # entry point hook for openai gym
-   register(id="MNIST-v0", entry_point="thesisdata.gym.mnist:MNISTEnvironment")
+   register(id="MNIST-v0", entry_point="thesisdata.environment.mnist:MNISTEnvironment")
 

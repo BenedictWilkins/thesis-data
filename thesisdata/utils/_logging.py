@@ -10,11 +10,17 @@ __status__ = "Development"
 import logging
 import sys
 
-Log = logging.getLogger("thesis-data")
-Log.setLevel(logging.DEBUG)
-streamHandler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-streamHandler.setFormatter(formatter)
-Log.addHandler(streamHandler)
+Logger = None
+def get_logger():
+   global Logger
+   if Logger is None:
+      Logger = logging.getLogger("thesisdata")
+      Logger.setLevel(logging.DEBUG)
+      if len(Logger.handlers) == 0:
+         streamHandler = logging.StreamHandler(sys.stdout)
+         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+         streamHandler.setFormatter(formatter)
+         Logger.addHandler(streamHandler)
+   return Logger
 
-__all__ = ("Log",)
+__all__ = ("get_logger",)

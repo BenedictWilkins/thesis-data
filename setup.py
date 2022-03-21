@@ -23,7 +23,7 @@ setup(name='thesisdata',
         ],
         entry_points={
             "gym.envs": [
-                "thesis = thesisdata.gym:register_entry_point"
+                "thesis = thesisdata.environment:register_entry_point"
             ]
         },
         zip_safe=False)

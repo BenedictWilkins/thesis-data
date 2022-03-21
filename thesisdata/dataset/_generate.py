@@ -14,7 +14,8 @@ import gymu # ensures env seralization works properly.
 
 from tqdm.auto import tqdm
 
-from ..utils import Log
+from ..utils import get_logger
+Logger = get_logger()
 
 WRITE_MODE_APPEND = 'a'
 WRITE_MODE_WRITE = 'w'
@@ -36,7 +37,7 @@ class GymDatasetWriter:
     def write(self, n):
         for _ in range(n):
             path = pathlib.Path(self.path, str(self.num_episodes).zfill(8))
-            Log.info(f"Writing episode: {path}")
+            Logger.info(f"Writing episode: {path}")
             gymu.data.write_episode(tqdm(self.iterator), path=path)
             self.num_episodes += 1
 
