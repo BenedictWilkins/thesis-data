@@ -18,8 +18,9 @@ setup(name='thesisdata',
         packages=find_packages(),
         install_requires=[
             'numpy', 'hydra-core', 'kaggle', 'torch', 'torchvision',
-            # 'jnu @ ...'
+            #'jnu @ ...'
             #'gymu @ git+https://git@github.com/BenedictWilkins/gymu.git',
+            #'stable_baselines3 @ git+https://github.com/DLR-RM/stable-baselines3.git#009bb0549ad0c9c1130309d95529a237e126578c'
         ],
         entry_points={
             "gym.envs": [

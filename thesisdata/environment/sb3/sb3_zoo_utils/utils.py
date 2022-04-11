@@ -10,8 +10,6 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-
-
 import argparse
 import glob
 import importlib
@@ -29,8 +27,11 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
 
+
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
+
+import gymu
 
 ALGOS = {
     "a2c": A2C,
@@ -211,6 +212,11 @@ def create_test_env(
     from thesisdata.environment.sb3.sb3_zoo_utils.exp_manager import ExperimentManager
 
     # Create the environment and wrap it if necessary
+
+    hyperparams['env_wrapper'].append('gymu.iter.InterceptWrapper')
+
+    # wrap the environment with an intercept wrapper...
+
     env_wrapper = get_wrapper_class(hyperparams)
 
     hyperparams = {} if hyperparams is None else hyperparams
@@ -254,8 +260,9 @@ def create_test_env(
 
         n_stack = hyperparams.get("frame_stack", 0)
         if n_stack > 0:
-            print(f"Stacking {n_stack} frames")
+            #print(f"Stacking {n_stack} frames")
             env = VecFrameStack(env, n_stack)
+            
     return env
 
 

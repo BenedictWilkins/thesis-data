@@ -11,7 +11,7 @@ import logging
 import sys
 
 Logger = None
-def get_logger():
+def getLogger():
    global Logger
    if Logger is None:
       Logger = logging.getLogger("thesisdata")
@@ -23,4 +23,4 @@ def get_logger():
          Logger.addHandler(streamHandler)
    return Logger
 
-__all__ = ("get_logger",)
+__all__ = ("getLogger","Logger")

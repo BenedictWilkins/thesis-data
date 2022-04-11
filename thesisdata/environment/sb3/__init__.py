@@ -17,23 +17,50 @@ import sys
 import os
 import yaml
 import numpy as np
+import gymu
+import gym
 
 from .sb3_zoo_utils import ALGOS, create_test_env, get_saved_hyperparams
 
 # it doesnt like relative imports here??? wtf.
-from thesisdata.utils._logging import get_logger
-Logger = get_logger()
+from thesisdata.utils._logging import getLogger
+Logger = getLogger()
 
 from thesisdata.utils import get_project_root_directory, resolve_class
 
 DEFAULT_MODEL_PATH = pathlib.Path(__file__).parent
-DEFAULT_MODEL_PATH = pathlib.Path(DEFAULT_MODEL_PATH, "models/rl-trained-agents/")
+DEFAULT_MODEL_PATH = pathlib.Path(DEFAULT_MODEL_PATH, "rl-trained-agents/")
 
+class SB3PolicyWrapper: # wrap the s3b policy so that randomness may be introduced & works with gymu iterators.
+
+   def __init__(self, policy, action_space, eps=0, deterministic=False):
+      self.policy = policy
+      self.eps = eps
+      self.action_space = action_space
+      self.deterministic = deterministic
+      self.hidden_state = None
+
+   def __call__(self, state):
+      # TODO recurrent policies not supported... reset is a bit tricky...
+      if np.random.uniform() > self.eps:
+         action, self.hidden_state = self.policy.predict(state, deterministic=self.deterministic)
+      else:
+         action = self.action_space.sample() # TODO this doesnt work out of the box... which is annoying! maybe create an issue or something?
+         action = np.array([action])
+      return action
+
+class InfoWrapper(gym.Wrapper): # get atari envs to conform to gym API.
+   def step(self, a):
+      state, reward, done, info = self.env.step(a)
+      return state, reward, done, info[0]
+   def reset(self):
+      return self.env.reset(), {}
+      
 def load(args):
    # use pretrained models...
    path = pathlib.Path(DEFAULT_MODEL_PATH, args.policy.split(".")[-1].lower(), f"{args.env_id}_1")
    env_id = args.env_id
-   env_kwargs = args.kwargs
+   env_kwargs = args.env_kwargs
    Logger.info(f"Using SB3 path: {path}")
    
    # LOAD ENVIRONMENT
@@ -61,7 +88,7 @@ def load(args):
          hyperparams=hyperparams,
          env_kwargs=env_kwargs,
       )
-
+   env = InfoWrapper(env)
 
    # LOAD POLICY
    policy_cls = resolve_class(args.policy)
@@ -82,6 +109,8 @@ def load(args):
       }
 
    policy = policy_cls.load(checkpoint_path, env, custom_objects=custom_objects, **policy_kwargs)
-   policy = lambda x: policy.predict(x, determinstic=False)
+   policy = SB3PolicyWrapper(policy, env.action_space, args.__dict__.get('policy_eps', 0.1), deterministic=False)
    return env, policy
+
+
 

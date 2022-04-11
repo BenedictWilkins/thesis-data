@@ -8,6 +8,7 @@ __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
 import pathlib
+from typing import Union, List, Dict
 
 def resolve_class(cls):
     from importlib import import_module
@@ -18,7 +19,6 @@ def resolve_class(cls):
     except (ImportError, AttributeError) as e:
         raise ImportError(cls)
 
-def get_project_root_directory():
+def get_project_root_directory(root='thesisdata'):
     current_dir = pathlib.Path(__file__)
-    return [p for p in current_dir.parents if p.parts[-1]=='thesisdata'][0].parent
-
+    return [p for p in current_dir.parents if p.parts[-1]==root][0].parent
